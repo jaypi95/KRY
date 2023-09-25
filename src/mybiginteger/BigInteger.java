@@ -3324,7 +3324,7 @@ public class BigInteger
    * New algorithm for modular exponentiation. Result and interface are
    * supposed to be the same as in method modPow().
    */
-  public BigInteger myModPow(BigInteger exponent, BigInteger m) {
+ /* public BigInteger myModPow(BigInteger exponent, BigInteger m) {
     BigInteger result = new BigInteger(1);
 
     if (exponent.compareTo(BigInteger.ZERO) == 0){
@@ -3333,6 +3333,25 @@ public class BigInteger
       for (BigInteger i = new BigInteger(0); i.compareTo(exponent) < 0; i = i.add(BigInteger.ONE)) {
         result = result.multiply(this);
       }
+    }
+
+    return result.mod(m);
+  }*/
+
+  public BigInteger myModPow(BigInteger exponent, BigInteger m) {
+    BigInteger result = new BigInteger(1);
+
+    if (exponent.compareTo(BigInteger.ZERO) == 0){
+      result = result.mod(m);
+   } else {
+     BigInteger a = this;
+     int exponentLength = exponent.bitLength();
+     for (int i = 0; i < exponentLength; i++) {
+     if (exponent.testBit(i)) {
+         result = result.multiply(a).mod(m);
+     }
+     a = a.multiply(a).mod(m);
+     }
     }
 
     return result.mod(m);
