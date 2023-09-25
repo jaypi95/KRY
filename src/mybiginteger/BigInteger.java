@@ -3325,9 +3325,17 @@ public class BigInteger
    * supposed to be the same as in method modPow().
    */
   public BigInteger myModPow(BigInteger exponent, BigInteger m) {
-    return null;
+    BigInteger result = new BigInteger(1);
 
+    if (exponent.compareTo(BigInteger.ZERO) == 0){
+      result = result.mod(m);
+   } else {
+      for (BigInteger i = new BigInteger(0); i.compareTo(exponent) < 0; i = i.add(BigInteger.ONE)) {
+        result = result.multiply(this);
+      }
+    }
 
+    return result.mod(m);
   }
 
   /**
