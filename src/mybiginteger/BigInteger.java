@@ -1,6 +1,7 @@
 package mybiginteger;
 
 import java.lang.*;
+import java.math.BigDecimal;
 import java.util.*;
 import java.io.*;
 
@@ -2603,7 +2604,6 @@ public class BigInteger
    *        BigInteger is numerically less than, equal to, or greater
    *        than <tt>o</tt>, which must be a BigInteger.
    * @throws  ClassCastException <tt>o</tt> is not a BigInteger.
-   * @see     #compareTo(java.math.BigInteger)
    * @see     Comparable
    * @since   1.2
    */
@@ -3363,8 +3363,9 @@ public class BigInteger
    * Note that the factors p and q are assumed to be prime numbers.
    */
     public BigInteger myModPow(BigInteger exponent, BigInteger p, BigInteger q) {
-      BigInteger a1 = modPow(exponent, p);
-      BigInteger a2 = modPow(exponent, q);
+
+      BigInteger a1 = modPow(exponent.mod(p.subtract(ONE)), p);
+      BigInteger a2 = modPow(exponent.mod(q.subtract(ONE)), q);
 
       BigInteger u1 = q.modInverse(p);
       BigInteger u2 = p.modInverse(q);
