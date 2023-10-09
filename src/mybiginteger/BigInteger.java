@@ -3362,9 +3362,21 @@ public class BigInteger
    * modulus m, the factors p and q of m=p*q are passed as parameters.
    * Note that the factors p and q are assumed to be prime numbers.
    */
-  public BigInteger myModPow(BigInteger exponent, BigInteger p, BigInteger q) {
-    return BigInteger.ZERO;
-  }
+    public BigInteger myModPow(BigInteger exponent, BigInteger p, BigInteger q) {
+      BigInteger a1 = modPow(exponent, p);
+      BigInteger a2 = modPow(exponent, q);
+
+      BigInteger u1 = q.modInverse(p);
+      BigInteger u2 = p.modInverse(q);
+
+      BigInteger x1 = a1.multiply(u1).multiply(q);
+      BigInteger x2 = a2.multiply(u2).multiply(p);
+
+      BigInteger m = p.multiply(q);
+      return x1.add(x2).mod(m);
+    }
+
+
 
   /**
    * New integer division algorithm. Result and interface are supposed to be
