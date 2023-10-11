@@ -1,12 +1,12 @@
 package kryptotrainer;
 
+import mybiginteger.BigInteger;
+
 import javax.swing.*;
-
 import java.awt.*;
-import java.awt.event.*;
-import java.util.Random;
-
-import mybiginteger.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.stream.Stream;
 
 /**
  * <p>Title: KryptoTrainer</p>
@@ -278,14 +278,38 @@ public class FrameSerie3 extends JFrame implements ActionListener{
   	}
   }
 
+  private BigInteger calcPrime(BigInteger minimum){
+      return Stream.iterate(minimum.add(BigInteger.ONE), n -> n.add(BigInteger.ONE))
+              .filter(this::isPrime)
+              .findFirst()
+              .get();
+  }
+
+  private boolean isPrime(BigInteger number){
+      return number.isProbablePrime(100);
+  }
   /**
    * Diese Methode muss ausprogrammiert werden!
    */
   private void doDatenbankVerschl() {
   	// Schluessel erzeugen
-	   
+      for (int i = 0; i < datenSatzUnverschl.length; i++){
+          BigInteger p = calcPrime(datenSatzUnverschl[i]);
+          schluessel[i] = p;
+      }
     // Datenbank verschlüsseln
- 
+      BigInteger m = BigInteger.ONE;
+      BigInteger c = BigInteger.ZERO;
+
+        for (int i = 0; i < datenSatzUnverschl.length; i++){
+            m = m.multiply(schluessel[i]);
+        }
+
+        for (int i = 0; i < datenSatzUnverschl.length; i++){
+            BigInteger tempProd = m.divide(schluessel[i]);
+            c = c.add(datenSatzUnverschl[i].multiply(tempProd).multiply(tempProd.modInverse(schluessel[i])));
+        }
+        datenbankVerschl = c.mod(m);
     // Ergebnisse anzeigen
     schluesselAnzeigen();
     datenbankVerschlAnzeigen();
@@ -296,7 +320,9 @@ public class FrameSerie3 extends JFrame implements ActionListener{
    */
   private void doDatenbankEntschl() {
   	// Datenbank entschlüsseln
-	   
+      for(int i = 0; i < schluessel.length; i++){
+          datenSatzEntschl[i] = datenbankVerschl.mod(schluessel[i]);
+      }
     // Ergebnisse anzeigen
     datenSatzEntschlAnzeigen();
   }
