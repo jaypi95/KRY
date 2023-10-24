@@ -3421,9 +3421,44 @@ public class BigInteger
    * tableOfPrimes.
    */
   public static int[] createTableOfPrimes(int max) {
-    return null;
+    List<Integer> primes = new ArrayList<>();
+    for (int i = 0; i <= max; i++) {
+      if (isPrime(i)) {
+        primes.add(i);
+      }
+    }
+    tableOfPrimes = new int[primes.size()];
+    for (int i = 0; i < primes.size(); i++) {
+      tableOfPrimes[i] = primes.get(i);
+    }
+
+    return tableOfPrimes;
+
   }
 
+  private static boolean isPrime(int p){
+
+    if (p <= 1) {
+      return false;
+    }
+
+    if (p <= 3) {
+      return true;
+    }
+
+    if (p % 2 == 0 || p % 3 == 0) {
+      return false;
+    }
+
+    int sqrtN = (int)Math.sqrt(p);
+    for (int i = 5; i <= sqrtN; i += 6) {
+      if (p % i == 0 || p % (i + 2) == 0) {
+        return false;
+      }
+    }
+    return true;
+
+  }
   /**
    * Returns the floor value of the square root of this, i.e the integral part
    * of the square root of this.
