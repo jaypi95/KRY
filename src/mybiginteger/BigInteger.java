@@ -3505,10 +3505,13 @@ public class BigInteger
    */
   public int findExp(BigInteger r)  
   {
-	  int result = 0;
-	  
-	  
-	  return result; 
+	  double rDouble = r.doubleValue();
+      double zDouble = this.doubleValue();
+
+      double result = Math.log(rDouble) / Math.log(zDouble);
+
+
+      return (int) result;
   }
   
   
