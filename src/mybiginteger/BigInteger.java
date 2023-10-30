@@ -3516,12 +3516,19 @@ public class BigInteger
   
   
   /**
-   * Returns (potentially) a factor of this. B denotes an upper bound for the corresonding factors (details are given in the script).
+   * Returns (potentially) a factor of this. B denotes an upper bound for the corresponding factors (details are given in the script).
    */
   
   public BigInteger findFactor(BigInteger B) {
-  	
-	BigInteger result = new BigInteger("0");
+
+    BigInteger n = this;
+    BigInteger result = ONE;
+    while (result.equals(ONE) || result.equals(n)) {
+
+      BigInteger a = getRandomBigInteger(n);
+      BigInteger apow = a.modPow(B, n);
+      result = apow.subtract(a).gcd(n);
+    }
 
 	
     return result;
