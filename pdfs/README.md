@@ -1,0 +1,1 @@
+This directory contains PDFs for the labs of KRY where manual calculations where required. Most of it is not very nicely written but it should be readable and mostly correct.
