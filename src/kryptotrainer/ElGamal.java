@@ -2,6 +2,8 @@ package kryptotrainer;
 
 import mybiginteger.*;
 
+import java.util.Random;
+
 /**
  * <p>Title: KryptoTrainer</p>
  * <p>Description: Übungsumgebung für das Wahlfach Kryptologie</p>
@@ -37,24 +39,50 @@ public class ElGamal {
    * generieren und in publicKeyAlice bzw. privateKeyAlice speichern.
    */
   public void generateKeyPair() {
-    publicKeyAlice = new BigInteger[] {BigInteger.ZERO, BigInteger.ONE, BigInteger.valueOf(2)};
-    privateKeyAlice = BigInteger.valueOf(3);
+    Random rnd = new Random();
+    BigInteger.createTableOfPrimes(100);
+    BigInteger p = BigInteger.myProbableSafePrime(this.bitLengthPublicKey, 10, rnd);
+    BigInteger g = generateRandomNumber(p);
+    BigInteger a = generateRandomNumber(p);
+    BigInteger A = g.modPow(a, p);
+    publicKeyAlice = new BigInteger[] {p, g, A};
+    privateKeyAlice = a;
   }
 
   /**
    * Chiffrat (B,c) Bob -> Alice erstellen und in cipheredText abspeichern.
    */
   public void createCipheredText() {
-    cipheredText = new BigInteger[] {BigInteger.valueOf(4), BigInteger.valueOf(5)};
+    BigInteger m = this.plainText;
+    BigInteger p = publicKeyAlice[0];
+    BigInteger g = publicKeyAlice[1];
+    BigInteger A = publicKeyAlice[2];
+    BigInteger b = generateRandomNumber(p);
+    BigInteger B = g.modPow(b, p);
+    BigInteger c = m.multiply(A.modPow(b, p)).mod(p);
+    cipheredText = new BigInteger[] {B, c};
   }
 
   /**
    * Dechiffrierten Text Bob -> Alice erstellen und in decipheredText abspeichern.
    */
   public void createDecipheredText() {
-    decipheredText = BigInteger.valueOf(6);
+    BigInteger B = cipheredText[0];
+    BigInteger c = cipheredText[1];
+    BigInteger p = publicKeyAlice[0];
+    BigInteger a = privateKeyAlice;
+    BigInteger m = c.multiply(B.modPow(a.negate(), p)).mod(p);
+    decipheredText = m;
   }
 
+  private BigInteger generateRandomNumber(BigInteger max){
+    Random rnd = new Random();
+    BigInteger result = BigInteger.ZERO;
+    do {
+      result = BigInteger.myProbableSafePrime(max.bitLength(), 10, rnd);
+    } while(result.compareTo(max) >= 0 && !result.equals(BigInteger.ONE));
+    return result;
+  }
 
   /************************************************************************
    ************************************************************************
