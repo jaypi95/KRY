@@ -1,9 +1,13 @@
 package mybiginteger;
 
-import java.lang.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamField;
 import java.math.BigDecimal;
-import java.util.*;
-import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Immutable arbitrary-precision integers.  All operations behave as if
@@ -3480,7 +3484,12 @@ public class BigInteger
    * of the square root of this.
    */
   public BigInteger mySqrtFloor() {
-    return BigInteger.ZERO;
+    BigInteger x = this;
+    BigInteger g = x.divide(TWO);
+    while (g.compareTo(x.divide(g)) > 0.001) {
+      g = g.add(x.divide(g)).divide(TWO);
+    }
+    return g;
   }
 
   /**
@@ -3494,8 +3503,20 @@ public class BigInteger
   /**
    * Returns an integer factor of this, or ONE if this is prime.
    */
-  public BigInteger myPollardRho() {
-    return BigInteger.ONE;
+  public BigInteger myPollardRho(){
+      BigInteger x = TWO;
+      BigInteger y = TWO;
+      BigInteger d = ONE;
+
+      while (d.equals(ONE)){
+        x = myPollardRhoFunction(x);
+        y = myPollardRhoFunction(myPollardRhoFunction(y));
+        d = x.subtract(y).abs().gcd(this);
+      }
+      return (d.equals(this)) ? ONE : d;
+    }
+  private BigInteger myPollardRhoFunction(BigInteger x){
+    return x.pow(2).add(ONE).mod(this);
   }
   
   
