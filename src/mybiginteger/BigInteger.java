@@ -3497,7 +3497,62 @@ public class BigInteger
    * Caution: ZERO may be a valid result and may hence not be used as "no result" flag.
    */
   public BigInteger myModSqrt(BigInteger p) {
-    return BigInteger.valueOf(-1);
+    // Check for eulers criterion (if this is a quadratic residue mod p)
+    if (!this.modPow(p.subtract(BigInteger.ONE).divide(BigInteger.valueOf(2)), p).equals(BigInteger.ONE)) {
+      throw new ArithmeticException("is not a quadratic residue modulo p");
+    }
+
+    // Check for p = 3 mod 4 and use simple formula
+    if (p.mod(BigInteger.valueOf(4)).equals(BigInteger.valueOf(3))) {
+      return this.modPow(p.add(BigInteger.ONE).divide(BigInteger.valueOf(4)), p);
+    }
+
+
+    BigInteger q = p.subtract(BigInteger.ONE);
+    BigInteger ss = BigInteger.ZERO;
+    while (q.mod(BigInteger.valueOf(2)).equals(BigInteger.ZERO)) {
+      ss = ss.add(BigInteger.ONE);
+      q = q.divide(BigInteger.valueOf(2));
+    }
+
+    if (ss.equals(BigInteger.ONE)) {
+      return this.modPow(p.add(BigInteger.ONE).divide(BigInteger.valueOf(4)), p);
+    }
+
+    BigInteger z = BigInteger.valueOf(2);
+    while (!z.modPow(p.subtract(BigInteger.ONE).divide(BigInteger.valueOf(2)), p).equals(p.subtract(BigInteger.ONE))) {
+      z = z.add(BigInteger.ONE);
+    }
+
+    BigInteger c = z.modPow(q, p);
+    BigInteger r = this.modPow(q.add(BigInteger.ONE).divide(BigInteger.valueOf(2)), p);
+    BigInteger t = this.modPow(q, p);
+    BigInteger m = ss;
+
+    while (!t.equals(BigInteger.ONE)) {
+      BigInteger i = BigInteger.ZERO;
+      BigInteger temp = t;
+      while (!temp.equals(BigInteger.ONE)) {
+        temp = temp.multiply(temp).mod(p);
+        i = i.add(BigInteger.ONE);
+        if (i.equals(m)) {
+          throw new ArithmeticException("Error in algorithm");
+        }
+      }
+
+      BigInteger b = c;
+      int ex = m.subtract(i).subtract(BigInteger.ONE).intValue();
+      for (int j = 0; j < ex; j++) {
+        b = b.multiply(b).mod(p);
+      }
+
+      r = r.multiply(b).mod(p);
+      c = b.multiply(b).mod(p);
+      t = t.multiply(c).mod(p);
+      m = i;
+    }
+
+    return r;
   }
 
   /**
