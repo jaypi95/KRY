@@ -11,6 +11,6 @@ while True:
     y0 = ((y0**2 + a)**2 + a) % n
     d = gcd(abs(x0 - y0), n)
 
-    if(d > 1 and d < n):
+    if d > 1 and d < n:
         print("d = ", d)
         break
