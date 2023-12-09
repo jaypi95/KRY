@@ -3704,8 +3704,63 @@ public class BigInteger
                                 BigInteger p,
                                 BigInteger a,
                                 BigInteger b) throws Exception {
-    BigInteger[] res = {ZERO, ZERO};
+    BigInteger m;
+    BigInteger x_3;
+    BigInteger y_3;
+    BigInteger[] res;
+
+    // Reassigning these because I can't remember them otherwise
+    BigInteger x_1 = this;
+    BigInteger x_2 = Q_x;
+    BigInteger y_1 = P_y;
+    BigInteger y_2 = Q_y;
+
+    if(!isOnCurve(x_1, y_1, a, b, p) && !x_1.equals(p) ||
+       !isOnCurve(x_2, y_2, a, b, p) && !x_2.equals(p)){
+      throw new NumberFormatException("Punkt liegt nicht auf der Kurve");
+    }
+
+    // If x_1 == O
+    if(x_1.equals(p)){
+      res = new BigInteger[]{x_2, y_2};
+    } else if (x_2.equals(p)) { // If x_2 == O
+      res = new BigInteger[]{x_1, y_1};
+    } else if (!x_1.equals(x_2)){
+      // (y2 - y1) / (x1 - x2)
+      BigInteger numerator = y_2.subtract(y_1).mod(p);
+      BigInteger denominator = x_2.subtract(x_1).modInverse(p);
+      m = numerator.multiply(denominator).mod(p);
+      // m² - x1 - x2
+      x_3 = m.pow(2).subtract(x_1).subtract(x_2).mod(p);
+      // -m(x3 - x1) - y1
+      y_3 = m.negate().multiply((x_3.subtract(x_1))).subtract(y_1).mod(p);
+      res = new BigInteger[]{x_3, y_3};
+    } else if (x_1.equals(x_2) && y_1.equals(y_2) && !y_2.equals(ZERO)){
+      // (3*x_1² + a) / 2 * y_1
+      BigInteger numerator = x_1.pow(2).multiply(BigInteger.valueOf(3)).add(a).mod(p);
+      BigInteger denominator = y_1.multiply(TWO).modInverse(p);
+      m = numerator.multiply(denominator).mod(p);
+      // m² - 2*x_1
+      x_3 = m.pow(2).subtract(x_1.multiply(TWO)).mod(p);
+      // -m(x3 - x1) - y1
+      y_3 = m.negate().multiply((x_3.subtract(x_1))).subtract(y_1).mod(p);
+      res = new BigInteger[]{x_3, y_3};
+    } else {
+      res = new BigInteger[]{p, ZERO};
+    }
+
     return res;
+  }
+
+  private boolean isOnCurve(BigInteger x,
+                            BigInteger y,
+                            BigInteger a,
+                            BigInteger b,
+                            BigInteger p){
+    // is y² == x³ + ax + b (mod p)
+    BigInteger y_squared = y.pow(2).mod(p);
+    BigInteger curve = x.pow(3).add(a.multiply(x)).add(b).mod(p);
+    return y_squared.equals(curve);
   }
 
   /**
