@@ -7,9 +7,6 @@ from sympy.abc import x, y
 # den Punkt P = (73, 60) mit Ordnung |P | = 167. Ihr geheimer Schlüssel lautet d = 37 und
 # zum Signieren wählt sie die Zufallszahl k = 94.
 
-from sympy import symbols, Eq, solve
-from sympy.abc import x, y
-
 # Definiere die elliptische Kurve und den Körper GF(179)
 p = 179  # Primzahl für GF(179)
 E = Eq(y**2 % p, (x**3 + 8*x + 102) % p)  # Elliptische Kurve E: y^2 = x^3 + 8x + 102 über GF(179)
