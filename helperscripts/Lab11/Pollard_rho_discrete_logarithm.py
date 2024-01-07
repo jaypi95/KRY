@@ -2,26 +2,28 @@
 # Bestimmen Sie mit Hilfe der Pollard ρ - Methode in Z∗23 den diskreten Logarithmus log5(10).
 
 # Gegebene Werte
-base = 5
-value = 10
-mode = 23
+base = 6
+value = 4
+mode = 13
 
 
 # Hilfsfunktion zur Kategorisierung in G1, G2 oder G3
 # Das muss unter Umständen je nach Aufgabenstellung angepasst werden
 def kategorie(x):
-    if x in range(1, 8):
+    if x in range(1, 5):
         return 1
-    elif x in range(8, 16):
+    elif x in range(5, 9):
         return 2
     else:
         return 3
 
+def validate_result(base, value, mode, result):
+    return pow(base, result, mode) == value % mode
 
 # Pollard-Rho-Algorithmus für diskrete Logarithmen
 def pollard_rho_von_hand(base, value, mode):
-    x, a1, b1 = 1, 0, 0  # Startwerte für die Sequenz
-    y, a2, b2 = 1, 0, 0  # Startwerte für die schnelle Sequenz
+    x, a1, b1 = 1, 0, 0  # starting values for turtle
+    y, a2, b2 = 1, 0, 0  # starting values for hare
 
     while True:
         # Update x, a1, b1
@@ -59,6 +61,8 @@ def pollard_rho_von_hand(base, value, mode):
                 return "None"
             else:
                 return (s * pow(r, -1, mode)) % mode
+
+
 
 
 print(pollard_rho_von_hand(base, value, mode))

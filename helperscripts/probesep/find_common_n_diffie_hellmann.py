@@ -39,11 +39,7 @@ RED = "\033[31m"  # Red text
 GREEN = "\033[32m"  # Green text
 RESET = "\033[0m"  # Reset to default color
 BOLD = "\033[1m"  # Bold text
-
-
 #######################
-
-# Elliptic curve
 
 
 # Funktion zur Addition zweier Punkte auf der elliptischen Kurve
