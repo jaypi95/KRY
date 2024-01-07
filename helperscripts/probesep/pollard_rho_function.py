@@ -10,7 +10,6 @@ a = 3
 def f(x):
     return (x**2 + a) % n # Die Funktion f(x), falls eine funktion gegeben ist hier einsetzen
 #########################
-
 def pollard_rho(n, x, y, f):
     seen = set()
     while True:
