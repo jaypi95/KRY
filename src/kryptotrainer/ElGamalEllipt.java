@@ -31,12 +31,13 @@ public class ElGamalEllipt {
 	    
 	    public BigInteger[] elliptEncrypt(BigInteger[] M) throws Exception 
 	    {
-		      BigInteger[] B = {BigInteger.ZERO, BigInteger.ZERO};
-		      BigInteger[] C = {BigInteger.ZERO, BigInteger.ZERO};
-		
-		      
-		      BigInteger result[] = {B[0], B[1], C[0], C[1]};
-		      return result;
+			    BigInteger[] B = {BigInteger.ZERO, BigInteger.ZERO};
+				BigInteger[] C = {BigInteger.ZERO, BigInteger.ZERO};
+				B = P[0].elliptMultiply(P[1], kB, p, a, b);
+				BigInteger temp[] = A[0].elliptMultiply(A[1], kB, p, a, b);
+				C = temp[0].elliptAdd(temp[1], M[0], M[1], p, a, b);
+				BigInteger result[] = {B[0], B[1], C[0], C[1]};
+				return result;
 	    }
 	    
 	    
@@ -48,10 +49,10 @@ public class ElGamalEllipt {
 	    public BigInteger[] elliptDecrypt(BigInteger[] B, BigInteger[] C) throws Exception 
 	    
 	    {
-	    	BigInteger[] result = {BigInteger.ZERO, BigInteger.ZERO};
-
-	    	
-	    	return result;
+			BigInteger[] result = {BigInteger.ZERO, BigInteger.ZERO};
+			BigInteger temp[] = B[0].elliptMultiply(B[1].negate().add(p), kA, p, a, b);
+			result = temp[0].elliptAdd(temp[1], C[0], C[1], p, a, b);
+			return result;
 	    }
 	    
 	    
@@ -63,10 +64,23 @@ public class ElGamalEllipt {
 	    
 	    public BigInteger[] messageEncrypt(BigInteger m) throws Exception
 	    {
-	    	BigInteger result[]  = {BigInteger.ZERO, BigInteger.ZERO};
+			BigInteger[] point = {BigInteger.ZERO, BigInteger.ZERO};
+			for(int j = 0; j <= 128; j++){
+				point[0] = BigInteger.valueOf(128).multiply(m).add(BigInteger.valueOf(j));
 
-	    	
-	    	return result;
+				if(point[0].compareTo(p) == 1){
+					point[0] = BigInteger.ZERO;
+					point[1] = BigInteger.ZERO;
+					break;
+				}
+				BigInteger s = point[0].pow(3).add(a.multiply(point[0])).add(b);
+				point[1] = s.myModSqrt(p);
+				if(!point.equals(BigInteger.ZERO)){
+					break;
+				}
+			}
+			BigInteger result[] = elliptEncrypt(point);
+			return result;
 	    }
 	    
 	    
@@ -80,6 +94,10 @@ public class ElGamalEllipt {
 	    public BigInteger messageDecrypt(BigInteger[] B, BigInteger[] C) throws Exception
 	    {
 	    	BigInteger result = BigInteger.ZERO;
+			BigInteger[] temp = {BigInteger.ZERO, BigInteger.ZERO};
+			temp = elliptDecrypt(B, C);
+			result = temp[0].divide(BigInteger.valueOf(128));
+
 
 	    	
 	    	return result;
