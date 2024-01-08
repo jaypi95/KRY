@@ -3704,6 +3704,23 @@ public class BigInteger
                                 BigInteger p,
                                 BigInteger a,
                                 BigInteger b) throws Exception {
+
+    BigInteger[] res;
+
+    if(!isOnCurve(this, P_y, a, b, p) || !isOnCurve(Q_x, Q_y, a, b, p)) {
+      throw new NumberFormatException("Point is not on the curve");
+    }
+
+    res = addTwoPoints(P_y, Q_x, Q_y, p, a);
+
+    return res;
+  }
+
+  private BigInteger[] addTwoPoints(BigInteger P_y,
+                                    BigInteger Q_x,
+                                    BigInteger Q_y,
+                                    BigInteger p,
+                                    BigInteger a){
     BigInteger m;
     BigInteger x_3;
     BigInteger y_3;
@@ -3714,11 +3731,6 @@ public class BigInteger
     BigInteger x_2 = Q_x;
     BigInteger y_1 = P_y;
     BigInteger y_2 = Q_y;
-
-    if(!isOnCurve(x_1, y_1, a, b, p) && !x_1.equals(p) ||
-       !isOnCurve(x_2, y_2, a, b, p) && !x_2.equals(p)){
-      throw new NumberFormatException("Punkt liegt nicht auf der Kurve");
-    }
 
     // If x_1 == O
     if(x_1.equals(p)){
@@ -3748,7 +3760,6 @@ public class BigInteger
     } else {
       res = new BigInteger[]{p, ZERO};
     }
-
     return res;
   }
 
@@ -3773,7 +3784,25 @@ public class BigInteger
                                      BigInteger p,
                                      BigInteger a,
                                      BigInteger b) throws Exception {
-    BigInteger[] res = {ZERO, ZERO};
+    BigInteger[] res = {p, ZERO};
+    BigInteger[] P = {this, y};
+    BigInteger sx_P = this.pow(3).add(this.multiply(a)).add(b).mod(p);
+
+    if (!isOnCurve(this, y, a, b, p)) {
+      throw new NumberFormatException("Point is not on the curve");
+    }
+
+    for (int i = 0; i < factor.bitLength(); i++) {
+      if (i > 0) {
+        P = P[0].addTwoPoints(P[1], P[0], P[1], p, a);
+      }
+
+      if (factor.testBit(i)) {
+        res = res[0].addTwoPoints(res[1], P[0], P[1], p, a);
+      }
+
+    }
     return res;
   }
 }
+
